@@ -74,8 +74,8 @@ public class DirectBitmap : IDisposable
           0x08,      0x06,      0x00,      0x00,      0x00,/* CRC */0,/* CRC */0,/* CRC */0,
     /* CRC */0];
     private static ReadOnlySpan<byte> PNGFooter => [
-              0x00,      0x00,      0x00,      0x00, (byte)'I', (byte)'E', (byte)'N', (byte)'D',
-              0xAE,      0x42,      0x60,      0x82];
+          0x00,      0x00,      0x00,      0x00, (byte)'I', (byte)'E', (byte)'N', (byte)'D',
+          0xAE,      0x42,      0x60,      0x82];
     public void SavePNG(Stream destination, CompressionLevel compressionLevel, int approxIDATSize)
     {
         // Header + IHDR
@@ -85,6 +85,7 @@ public class DirectBitmap : IDisposable
         BinaryPrimitives.WriteInt32BigEndian(header[20..], Height);
         BinaryPrimitives.WriteUInt32BigEndian(header[29..], Crc32.HashToUInt32(header.Slice(12, 17)));
         destination.Write(header);
+        // IDATs
         using (ZLibStream body = new(new IDATStream(destination, approxIDATSize), compressionLevel, false))
         {
             ReadOnlySpan<uint> span = Bits;
@@ -169,7 +170,7 @@ public class DirectBitmap : IDisposable
             _crc32.Reset();
             _crc32.Append("IDAT"u8);
         }
-        public override void Close()
+        protected override void Dispose(bool disposing)
         {
             Flush();
             _memoryStream.Dispose();
