@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Runtime.InteropServices;
 
 namespace GameMapMerge;
 
@@ -49,9 +50,17 @@ class MapInfo : IDisposable
         set
         {
             if (value is null)
-                _map.Remove(new(x, y));
+            {
+                if (_map.Remove(new(x, y), out DisposableHolder<Bitmap>? bmp))
+                    bmp?.Decrease();
+            }
             else
-                _map[new(x, y)] = value;
+            {
+                ref DisposableHolder<Bitmap>? bmp = ref CollectionsMarshal.GetValueRefOrAddDefault(_map, new(x, y), out _);
+                bmp?.Decrease();
+                value?.Increase();
+                bmp = value;
+            }
         }
     }
 
