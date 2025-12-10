@@ -71,6 +71,7 @@ partial class Program
                     string name = mFallback.Groups["name"].Value;
                     if (!bitmaps.TryGetValue(name, out MapInfo? info))
                         bitmaps.Add(name, info = new());
+                    info.Fallback?.Decrease();
                     bmp.Increase();
                     info.Fallback = bmp;
                 }

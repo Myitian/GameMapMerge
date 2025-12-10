@@ -92,7 +92,7 @@ public class DirectBitmap : IDisposable
             Span<uint> line = GC.AllocateUninitializedArray<uint>(Width);
             while (!span.IsEmpty)
             {
-                // GDI+  BGRA(LE) -> PNG   RGBA(BE)
+                // GDI+      BGRA -> PNG       RGBA
                 // 0xAARRGGBB(LE) -> 0xAABBGGRR(LE)
                 // Modern Windows will not be in big-endian byte order.
                 int i = 0;

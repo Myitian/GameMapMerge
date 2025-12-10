@@ -33,7 +33,16 @@ class MapInfo : IDisposable
     }
     public int UnitSize => _map.Values.Max(it => Math.Max(it.Value.Width, it.Value.Height));
     public bool IsEmpty => _map.Count == 0;
-    public DisposableHolder<Bitmap>? Fallback { get; set; } = null;
+    public DisposableHolder<Bitmap>? Fallback
+    {
+        get => field;
+        set
+        {
+            field?.Decrease();
+            value?.Increase();
+            field = value;
+        }
+    } = null;
     public DisposableHolder<Bitmap>? this[int x, int y]
     {
         get => _map.TryGetValue(new(x, y), out DisposableHolder<Bitmap>? bmp) ? bmp : Fallback;
